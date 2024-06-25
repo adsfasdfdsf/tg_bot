@@ -3,13 +3,13 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
 from telegram.ext.filters import Regex, COMMAND
 
-token = "TOKEN"
+token = "6996718949:AAEk05cwz8CxJEsjk9tln8b4B4UsbBdQ95Q"
 
 ADD, DELETE, ANY = range(3)
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    reply_keyboard = [["Add new stock"], ["remove one of my stocks"], ["Show my stocks"], ["Stop conversation"]]
+    reply_keyboard = [["Add new stock"], ["Remove one of my stocks"], ["Show my stocks"], ["Stop conversation"]]
     markup_key = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     await context.bot.send_message(chat_id=update.effective_chat.id,
                                    text="I'm a screener bot, I can show some statistics on "
