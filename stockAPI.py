@@ -20,7 +20,7 @@ class API:
 async def main():
     async with httpx.AsyncClient() as ascl:
         app = API(ascl)
-        await app.get_json_info("Apple")
+        await app.get_security_by_name("Apple")
 
 
 asyncio.run(main())

@@ -4,11 +4,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, filters, C
 from telegram.ext.filters import Regex, COMMAND
 from passwords import TOKEN
 
-<<<<<<< HEAD
-token = "6996718949:AAEk05cwz8CxJEsjk9tln8b4B4UsbBdQ95Q"
-=======
 token = TOKEN
->>>>>>> tmp
 
 ADD, DELETE, ANY = range(3)
 
