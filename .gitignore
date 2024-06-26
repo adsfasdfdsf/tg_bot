@@ -1,5 +1,9 @@
 *.xml
 *.iml
 *.DC_Store
+<<<<<<< HEAD
 *.name
 passwords.py
+=======
+*.name
+>>>>>>> develop
