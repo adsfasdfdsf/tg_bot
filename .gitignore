@@ -2,3 +2,4 @@
 *.iml
 *.DC_Store
 *.name
+passwords.py

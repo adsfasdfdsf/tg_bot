@@ -2,8 +2,9 @@ import asyncio
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
 from telegram.ext.filters import Regex, COMMAND
+from passwords import TOKEN
 
-token = "TOKEN"
+token = TOKEN
 
 ADD, DELETE, ANY = range(3)
 
