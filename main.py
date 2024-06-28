@@ -10,6 +10,8 @@ con = Connector()
 
 ADD, DELETE, ANY = range(3)
 
+con_established = False
+
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_keyboard = [["Add new stock"], ["Remove one of my stocks"], ["Show my stocks"], ["Stop conversation"]]
@@ -18,6 +20,8 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                    text="I'm a screener bot, I can show some statistics on "
                                         "different stocks and shares! You can choose any option and get a description",
                                    reply_markup=markup_key)
+    if not con_established:
+        await con.Init()
     return ANY
 
 
@@ -67,7 +71,7 @@ async def remove_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def end_process(update: Update, context: ContextTypes.DEFAULT_TYPE):
     reply_keyboard = [["Add new stock"], ["Remove one of my stock"], ["Show my stock"], ["Stop conversation"]]
     markup_key = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
-    await update.effective_user.send_message(text="ok that`s it, anything else?", reply_markup=markup_key)
+    await update.effective_user.send_message(text="Ok that`s it, anything else?", reply_markup=markup_key)
     return ANY
 
 
@@ -78,8 +82,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-async def main():
-    await con.Init()
+def main():
     app = Application.builder().token(token).build()
     conv_handler = ConversationHandler(entry_points=[CommandHandler("start", start_command)],
                                        states={
@@ -87,7 +90,7 @@ async def main():
                                                ~ filters.Regex('Stop conversation')), any_state)],
                                            ADD: [MessageHandler(filters.TEXT & (~ filters.COMMAND), add_paper),
                                                  CommandHandler("end", end_process)],
-                                           DELETE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), add_paper),
+                                           DELETE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), remove_paper),
                                                     CommandHandler("end", end_process)]
                                        },
                                        fallbacks=[CommandHandler('cancel', cancel), CommandHandler('stop', cancel),
@@ -97,4 +100,5 @@ async def main():
     app.run_polling(poll_interval=1)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    main()
