@@ -12,11 +12,12 @@ class API:
         self._client = httpx.AsyncClient()
 
     async def get_security_by_name(self, security_name: str):
-        params = {"q": security_name, "iss.meta": "off", "securities.columns": "secid,isin,shortname,name"}
+        params = {"q": security_name, "iss.meta": "off", "securities.columns": "secid,isin,shortname,name,type"}
         response = await self._client.get(url="https://iss.moex.com/iss/securities.json", params=params)
         r = json.loads(await response.aread())
         print(r)
-        return (r["securities"]["data"])
+        res = r["securities"]["data"]
+        return res
 
     async def get_today_security_info(self, security_tiker: str):
         params = {'securities': security_tiker, "iss.meta": "off", "secstats.column": ""}
@@ -40,13 +41,3 @@ class API:
         print(r)
 
 
-<<<<<<< HEAD
-async def main():
-    async with httpx.AsyncClient() as ascl:
-        app = API(ascl)
-        await app.get_security_by_name("Apple")
-
-
-asyncio.run(main())
-=======
->>>>>>> origin/db-develop

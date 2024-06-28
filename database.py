@@ -1,10 +1,7 @@
 import asyncpg
 import asyncio
 
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/db-develop
 class DataBase:
     def __init__(self, host, port, user, dbname, password):
         self.user = user
@@ -20,22 +17,7 @@ class DataBase:
                                          database=self.dbname,
                                          password=self.password,
                                          user=self.user)
-<<<<<<< HEAD
 
-    async def user_info(self, username: str):
-        await self.con.execute('''CREATE TABLE IF NOT EXISTS users
-         (
-            user_id int PRIMARY KEY,
-            securities TEXT ARRAY
-         )''')
-
-async def main():
-    db = DataBase("localhost", 5432, "postgres", "postgres", "18Jul2007")
-    await db.async_connect()
-    await db.user_info("dfs")
-
-asyncio.run(main())
-=======
         await self.con.execute('''CREATE TABLE IF NOT EXISTS users
                          (
                             user_id INT PRIMARY KEY,
@@ -43,9 +25,11 @@ asyncio.run(main())
                          )''')
         await self.con.execute('''CREATE TABLE IF NOT EXISTS securities
                          (
-                            security_ticker TEXT PRIMARY KEY,
-                            security_fullname TEXT,
-                            security_type TEXT
+                            secid TEXT PRIMARY KEY,
+                            isin TEXT,
+                            shortname TEXT,
+                            name TEXT,
+                            type TEXT
                          )''')
         # TODO create table for securities if needed
 
@@ -73,11 +57,12 @@ asyncio.run(main())
             ({user_id}, ARRAY['{ticker.upper()}'])
             ''')
         else:
-            await self.con.execute('''
-            UPDATE users
-            SET securities = array_append(securities, $1)
-            WHERE user_id = $2
-            ''', ticker.upper(), user_id)
+            if ticker.upper() not in res[0]["securities"]:
+                await self.con.execute('''
+                UPDATE users
+                SET securities = array_append(securities, $1)
+                WHERE user_id = $2
+                ''', ticker.upper(), user_id)
 
     async def remove_security_from_user(self, user_id, ticker):
         securities = await self.get_user_securities(user_id)
@@ -89,23 +74,17 @@ asyncio.run(main())
             ''')
 
     async def find_security(self, ticker):
-        res = self.con.fetch(f'''
+        res = await self.con.fetch(f'''
         SELECT * 
         FROM securities
-        WHERE security_ticker = '{ticker}'
+        WHERE secid = '{ticker.upper()}'
         ''')
-        if not res[0]:
-            res = self.con.fetch(f'''
-                    SELECT * 
-                    FROM securities
-                    WHERE security_fullname = '{ticker}'
-                    ''')
-        return res[0]
+        return res[:]
 
-    async def add_security(self, ticker, fullname, type):
+    async def add_security(self, secid, isin, shortname, name, type):
         await self.con.execute(f'''
         INSERT INTO securities
         VALUES
-        ('{ticker}', '{fullname}', '{type}')
+        ('{secid.upper()}', '{isin.upper()}', '{shortname}', '{name}', '{type}')
         ''')
->>>>>>> origin/db-develop
+
