@@ -18,10 +18,16 @@ class DataBase:
                                          password=self.password,
                                          user=self.user)
         await self.con.execute('''CREATE TABLE IF NOT EXISTS users
-                 (
-                    user_id INT PRIMARY KEY,
-                    securities TEXT ARRAY
-                 )''')
+                         (
+                            user_id INT PRIMARY KEY,
+                            securities TEXT ARRAY
+                         )''')
+        await self.con.execute('''CREATE TABLE IF NOT EXISTS securities
+                         (
+                            security_ticker TEXT PRIMARY KEY,
+                            security_fullname TEXT,
+                            security_type TEXT
+                         )''')
         # TODO create table for securities if needed
 
     async def get_user_securities(self, user_id):
@@ -35,7 +41,7 @@ class DataBase:
         r = res[0]["securities"]
         return r
 
-    async def add_security(self, user_id, ticker):
+    async def add_security_to_user(self, user_id, ticker):
         res = await self.con.fetch('''
         SELECT *
         FROM users
@@ -54,7 +60,7 @@ class DataBase:
             WHERE user_id = $2
             ''', ticker.upper(), user_id)
 
-    async def remove_security(self, user_id, ticker):
+    async def remove_security_from_user(self, user_id, ticker):
         securities = await self.get_user_securities(user_id)
         if ticker.upper() in securities:
             await self.con.execute(f'''
@@ -63,3 +69,23 @@ class DataBase:
             WHERE user_id = {int(user_id)}
             ''')
 
+    async def find_security(self, ticker):
+        res = self.con.fetch(f'''
+        SELECT * 
+        FROM securities
+        WHERE security_ticker = '{ticker}'
+        ''')
+        if not res[0]:
+            res = self.con.fetch(f'''
+                    SELECT * 
+                    FROM securities
+                    WHERE security_fullname = '{ticker}'
+                    ''')
+        return res[0]
+
+    async def add_security(self, ticker, fullname, type):
+        await self.con.execute(f'''
+        INSERT INTO securities
+        VALUES
+        ('{ticker}', '{fullname}', '{type}')
+        ''')

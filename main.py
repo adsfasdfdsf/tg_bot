@@ -54,6 +54,7 @@ async def any_state(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def add_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await con.add_security(update.effective_user.id, update.message.text)
     return ADD
+#TODO choose beetwen many
 
 
 async def show_user_securities(update: Update):
