@@ -3,12 +3,10 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
 from telegram.ext.filters import Regex, COMMAND
 from passwords import TOKEN
+from connector import Connector
 
-<<<<<<< HEAD
-token = "6996718949:AAEk05cwz8CxJEsjk9tln8b4B4UsbBdQ95Q"
-=======
 token = TOKEN
->>>>>>> tmp
+con = Connector()
 
 ADD, DELETE, ANY = range(3)
 
@@ -26,7 +24,7 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def any_state(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if "add" in update.message.text.lower():
         await update.effective_user.send_message(
-            "Write a name of a stock you want to add.",
+            "Write a tiсker (or a name, but ticker is better) of a stock you want to add.",
             reply_markup=ReplyKeyboardRemove())
         await update.effective_user.send_message(
             "If you want to add more than one, type the names in different "
@@ -42,7 +40,7 @@ async def any_state(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return DELETE
     if "show" in update.message.text.lower():
         await update.effective_user.send_message("Connecting to database...")
-        data = await get_user_from_db(update.effective_user)
+        data = await show_user_securities(update)
     else:
         await update.effective_user.send_message(
             f"I don`t know what does {update.message.text} means, please choose on of the options on reply keyboard")
@@ -50,17 +48,19 @@ async def any_state(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def add_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # TODO connection to db
+    await con.add_security(update.effective_user.id, update.message.text)
     return ADD
 
 
-async def get_user_from_db(user: Update.effective_user):
-    # TODO connection to db
-    return 0
+async def show_user_securities(update: Update):
+    data = await con.get_user_securities(update.effective_user.id)
+    for i in data:
+        await update.effective_user.send_message(i)
+    #TODO graphics and more info about securities
 
 
 async def remove_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # TODO connection to db
+    await con.remove_security(update.effective_user.id, update.message.text)
     return DELETE
 
 
@@ -78,7 +78,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-if __name__ == "__main__":
+async def main():
+    await con.Init()
     app = Application.builder().token(token).build()
     conv_handler = ConversationHandler(entry_points=[CommandHandler("start", start_command)],
                                        states={
@@ -94,3 +95,6 @@ if __name__ == "__main__":
     app.add_handler(conv_handler)
 
     app.run_polling(poll_interval=1)
+
+
+asyncio.run(main())
