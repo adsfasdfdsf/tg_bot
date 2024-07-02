@@ -92,7 +92,7 @@ async def add_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.effective_user.send_message("We've found too many. Can not display in chat please "
                                                      "write an appropriate ticker")
             return ADD
-#TODO choose beetwen many
+
 
 async def choose_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text.strip().upper()
@@ -142,6 +142,7 @@ async def end_choosing(update: Update, context: ContextTypes.DEFAULT_TYPE):
     markup_key = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
     await update.effective_user.send_message(text="Ok that`s it, anything else?", reply_markup=markup_key)
     return ANY
+
 
 async def show_user_securities(update: Update):
     data = await con.get_user_securities(update.effective_user.id)

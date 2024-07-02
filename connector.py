@@ -1,9 +1,10 @@
 from database import DataBase
 from passwords import DBNAME, PASSWORD, PORT, USER, HOST
 from stockAPI import API
+from graphics import draw_price_graph
+import time
+import asyncio
 
-
-#TODO Api requests
 class Connector:
     def __init__(self):
         self.database = DataBase(dbname=DBNAME, user=USER, host=HOST, password=PASSWORD, port=PORT)
@@ -61,3 +62,20 @@ class Connector:
     async def remove_security(self, user_id, ticker):
         await self.database.remove_security_from_user(user_id, ticker)
 
+    async def draw_price_graphic(self, secid):
+        sec = await self.database.find_security(secid)
+        if len(sec) == 0:
+            return "Error"
+        data = []
+        if sec[0]["type"].count("share") > 0:
+            data = await self.api.get_share_history(secid, "2021-01-01", time.strftime("%Y-%m-%d"))
+        elif sec[0]["type"].count("bond") > 0:
+            data = await self.api.get_bond_history(secid, "2021-01-01", time.strftime("%Y-%m-%d"))
+        draw_price_graph(sec[0]["shortname"], data["history"]["data"])
+
+
+async def main():
+    con = Connector()
+    await con.Init()
+    await con.draw_price_graphic("GAZP")
+asyncio.run(main())

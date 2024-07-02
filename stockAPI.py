@@ -40,4 +40,28 @@ class API:
         r = json.loads(await response.aread())
         print(r)
 
+    async def get_bond_history(self, secid: str, from_date, till_date):
+        params = {"iss.meta": "off", "history.columns": "TRADEDATE,WAPRICE,CURRENCYID",
+                  "boardid": "TQBR", "from": from_date, "till": till_date}
+        response = await self._client.get(url=f"http://iss.moex.com/iss/history/engines"
+                                              f"/stock/markets/bonds/securities/{secid}.json",
+                                          params=params)
+        r = json.loads(await response.aread())
+        return r
 
+    async def get_share_history(self, secid: str, from_date, till_date):
+        params = {"iss.meta": "off", "from": from_date, "till": till_date,
+                  "history.columns": "TRADEDATE,OPEN,CLOSE,HIGH,LOW,CURRENCYID",
+                  "boardid": "TQBR", "marketprice_board": "1"}
+        response = await self._client.get(url=f"http://iss.moex.com/iss/history/engines"
+                                              f"/stock/markets/shares/securities/{secid}.json",
+                                          params=params)
+        r = json.loads(await response.aread())
+        return r
+
+
+async def main():
+    api = API()
+    await api.Init()
+    await api.get_share_history("GAZP", "2024-01-01", "2024-07-01")
+asyncio.run(main())
