@@ -252,7 +252,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    app = Application.builder().token(token).build()
+    app = Application.builder().token(token).concurrent_updates(True).build()
     conv_handler = ConversationHandler(entry_points=[CommandHandler("start", start_command)],
                                        states={
                                            ANY: [MessageHandler(filters.TEXT & (~ filters.COMMAND) & (

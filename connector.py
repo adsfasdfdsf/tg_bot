@@ -3,7 +3,7 @@ from passwords import DBNAME, PASSWORD, PORT, USER, HOST
 from stockAPI import API
 from graphics import draw_price_graph
 import time
-import asyncio
+
 
 class Connector:
     def __init__(self):
@@ -111,8 +111,5 @@ class Connector:
         else:
             return "can not draw graphic on this type of security"
         if len(data["history"]["data"]) == 0:
-            return "api error"
-        draw_price_graph(sec[0]["shortname"], data["history"]["data"], sec[0]["secid"])
-        return "ok"
-
-
+            return "api error, no history found"
+        await draw_price_graph(sec[0]["shortname"], data["history"]["data"], sec[0]["secid"])
