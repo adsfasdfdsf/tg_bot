@@ -1,9 +1,9 @@
-import pandas as pd
-import mplfinance as mpf
 import matplotlib.pyplot as mpl
+import mplfinance as mpf
+import pandas as pd
 
 
-async def draw_price_graph(name, data, secid):
+async def draw_price_graph(name: str, data: list, secid: str) -> None:
     opened = []
     close = []
     high = []
@@ -32,7 +32,7 @@ async def draw_price_graph(name, data, secid):
     fig.clf()
 
 
-async def draw_payment_graph(ticker, data, name):
+async def draw_payment_graph(ticker: str, data: list, name: str) -> None:
     a = {}
     for i in data:
         if i[2]:

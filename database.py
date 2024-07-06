@@ -1,5 +1,4 @@
 import asyncpg
-import asyncio
 
 
 class DataBase:
@@ -31,7 +30,6 @@ class DataBase:
                             name TEXT,
                             type TEXT
                          )''')
-        # TODO create table for securities if needed
 
     async def get_user_securities(self, user_id):
         res = await self.con.fetch('''

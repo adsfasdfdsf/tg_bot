@@ -1,13 +1,18 @@
-from database import DataBase
-from passwords import DBNAME, PASSWORD, PORT, USER, HOST
-from stockAPI import API
-from graphics import draw_price_graph, draw_payment_graph
+import os
 import time
 
+from dotenv import load_dotenv
+
+from database import DataBase
+from graphics import draw_payment_graph, draw_price_graph
+from stockAPI import API
+
+load_dotenv()
 
 class Connector:
     def __init__(self):
-        self.database = DataBase(dbname=DBNAME, user=USER, host=HOST, password=PASSWORD, port=PORT)
+        self.database = DataBase(dbname=os.getenv("DBNAME"), user=os.getenv("DBUSER"),
+                                 host=os.getenv("HOST"), password=os.getenv("PASSWORD"), port=os.getenv("PORT"))
         self.api = API()
 
     async def Init(self):

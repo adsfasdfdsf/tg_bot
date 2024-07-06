@@ -2,5 +2,5 @@
 *.iml
 *.DC_Store
 *.name
-passwords.py
 *.pyc
+.env
