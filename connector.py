@@ -1,7 +1,7 @@
 from database import DataBase
 from passwords import DBNAME, PASSWORD, PORT, USER, HOST
 from stockAPI import API
-from graphics import draw_price_graph
+from graphics import draw_price_graph, draw_payment_graph
 import time
 
 
@@ -21,12 +21,9 @@ class Connector:
         res = await self.database.find_security(ticker)
         if res:
             if "share" in res[0]["type"]:
-                print(res)
                 return res
         response = await self.api.get_share_by_name(ticker)
-        print(response)
         if not response:
-            print(1)
             return []
         result = []
         for i in response:
@@ -38,7 +35,6 @@ class Connector:
                 a["shortname"] = i[2]
                 a["name"] = i[3]
                 a["type"] = i[4]
-                print(a)
                 result.append(a)
                 return result
             a = {}
@@ -47,22 +43,40 @@ class Connector:
             a["shortname"] = i[2]
             a["name"] = i[3]
             a["type"] = i[4]
-            print(a)
             result.append(a)
 
-        print(result)
         return result
+
+    async def draw_payment_graph(self, ticker):
+        res = await self.database.find_security(ticker)
+        data = []
+        if res:
+            if "bond" in res[0]["type"]:
+                data = await self.api.get_bondization(ticker)
+                if data:
+                    if data[0][2]:
+                        await draw_payment_graph(ticker, data[:4], res[0]["name"])
+                    else:
+                        return "NO INFO FOUND"
+            elif "share" in res[0]["type"]:
+                data = await self.api.get_dividends(ticker)
+                if data:
+                    if data[0][2]:
+                        await draw_payment_graph(ticker, data, res[0]["name"])
+                    else:
+                        return "NO INFO FOUND"
+            if not data:
+                return "no payments found"
+        else:
+            return "database error"
 
     async def find_bond(self, ticker):
         res = await self.database.find_security(ticker)
         if res:
             if "bond" in res[0]["type"]:
-                print(res)
                 return res
         response = await self.api.get_bond_by_name(ticker)
-        print(response)
         if not response:
-            print(1)
             return []
         result = []
         for i in response:
@@ -74,7 +88,6 @@ class Connector:
                 a["shortname"] = i[2]
                 a["name"] = i[3]
                 a["type"] = i[4]
-                print(a)
                 result.append(a)
                 return result
             a = {}
@@ -83,10 +96,8 @@ class Connector:
             a["shortname"] = i[2]
             a["name"] = i[3]
             a["type"] = i[4]
-            print(a)
             result.append(a)
 
-        print(result)
         return result
 
     async def add_security_to_db(self, secid, isin, shortname, name, type):
@@ -113,3 +124,4 @@ class Connector:
         if len(data["history"]["data"]) == 0:
             return "api error, no history found"
         await draw_price_graph(sec[0]["shortname"], data["history"]["data"], sec[0]["secid"])
+

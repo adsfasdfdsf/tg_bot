@@ -1,7 +1,5 @@
-import asyncio
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes, ConversationHandler
-from telegram.ext.filters import Regex, COMMAND
 from passwords import TOKEN
 from connector import Connector
 import os
@@ -16,7 +14,6 @@ con_established = False
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print(update.message.message_id)
     markup_key = ReplyKeyboardMarkup(menu_keyboard, one_time_keyboard=False)
     await context.bot.send_message(chat_id=update.effective_chat.id,
                                    text="I'm a screener bot, I can show some statistics on "
@@ -28,7 +25,6 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def any_state(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print(update.message.message_id)
     if "add" in update.message.text.lower():
         await update.effective_user.send_message(
             "Chose on a reply keyboard what do you want to add, bond or share. If you missed clicked tap /end",
@@ -226,11 +222,17 @@ async def show_user_securities(update: Update):
     data = await con.get_user_securities(update.effective_user.id)
     for i in data:
         answer = await con.draw_price_graphic(i)
-        if answer == "ok":
+        if not answer:
             await update.effective_user.send_photo(f"{i}.png")
             os.remove(f"{i}.png")
-        await update.effective_user.send_message(i)
-        await update.effective_user.send_message(answer)
+        else:
+            await update.effective_user.send_message(i)
+        answer = await con.draw_payment_graph(i)
+        if not answer:
+            await update.effective_user.send_photo(f"{i}payment.png")
+            os.remove(f"{i}payment.png")
+        else:
+            await update.effective_user.send_message(answer)
 
 
 async def remove_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -264,7 +266,7 @@ def main():
                                            CHOICE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), choose_paper),
                                                     CommandHandler("end", end_choosing)],
                                            DELETE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), remove_paper),
-                                                     CommandHandler("end", end_process)],
+                                                    CommandHandler("end", end_process)],
                                            SECRITY_CHOICE: [
                                                MessageHandler(filters.TEXT & (~ filters.COMMAND), security_choice),
                                                CommandHandler("end", end_process)]

@@ -15,7 +15,6 @@ class API:
         params = {"q": security_name, "iss.meta": "off", "securities.columns": "secid,isin,shortname,name,type"}
         response = await self._client.get(url="https://iss.moex.com/iss/securities.json", params=params)
         r = json.loads(await response.aread())
-        print(r)
         res = [i for i in r["securities"]["data"] if "share" in i[4]]
         return res
 
@@ -23,39 +22,38 @@ class API:
         params = {"q": security_name, "iss.meta": "off", "securities.columns": "secid,isin,shortname,name,type"}
         response = await self._client.get(url="https://iss.moex.com/iss/securities.json", params=params)
         r = json.loads(await response.aread())
-        print(r)
         res = [i for i in r["securities"]["data"] if "bond" in i[4]]
         return res
 
     async def get_today_security_info(self, security_tiker: str):
-        params = {'securities': security_tiker, "iss.meta": "off", "secstats.column": ""}
+        params = {"tradingsession": '3', 'securities': security_tiker, "iss.meta": "off"}
         response = await self._client.get(url="https://iss.moex.com/iss/engines/stock/markets/shares/secstats.json",
                                           params=params)
         r = json.loads(await response.aread())
         print(r)
+        return r[0]["data"]
 
     async def get_dividends(self, secid: str):
-        params = {"iss.meta": "off"}
+        params = {"iss.meta": "off", "dividends.columns": "secid,registryclosedate,value,currencyid"}
         response = await self._client.get(url=f"http://iss.moex.com/iss/securities/{secid}/dividends.json",
                                           params=params)
         r = json.loads(await response.aread())
-        print(r)
+        return r["dividends"]["data"]
 
     async def get_bondization(self, secid: str):
-        params = {"iss.meta": "off"}
+        params = {"iss.meta": "off", "coupons.columns": "isin,coupondate,value,faceunit,valueprc"}
         response = await self._client.get(url=f"http://iss.moex.com/iss/securities/{secid}/bondization.json",
                                           params=params)
         r = json.loads(await response.aread())
-        print(r)
+        return r["coupons"]["data"]
 
     async def get_bond_history(self, secid: str, from_date, till_date):
-        params = {"iss.meta": "off", "history.columns": "TRADEDATE,WAPRICE,CURRENCYID",
+        params = {"iss.meta": "off", "history.columns": "TRADEDATE,OPEN,CLOSE,HIGH,LOW,CURRENCYID",
                   "from": from_date, "till": till_date}
         response = await self._client.get(url=f"http://iss.moex.com/iss/history/engines"
                                               f"/stock/markets/bonds/securities/{secid}.json",
                                           params=params)
         r = json.loads(await response.aread())
-        print(r)
         return r
 
     async def get_share_history(self, secid: str, from_date, till_date):
@@ -66,7 +64,12 @@ class API:
                                               f"/stock/markets/shares/securities/{secid}.json",
                                           params=params)
         r = json.loads(await response.aread())
-        print(r)
         return r
 
 
+async def main():
+    api = API()
+    await api.Init()
+    await api.get_today_security_info("GAZP")
+
+asyncio.run(main())
