@@ -4,3 +4,6 @@
 *.name
 *.pyc
 .env
+.idea
+passwords.py
+.dockerignore

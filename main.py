@@ -1,6 +1,5 @@
 import os
 
-from dotenv import load_dotenv
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (Application, CommandHandler, ContextTypes,
                           ConversationHandler, MessageHandler, filters)
@@ -9,8 +8,8 @@ from connector import Connector
 from keyboards import CHOICE_KEYBOARD, MENU_KEYBOARD
 from states import State
 from texts import texts
+from passwords import TOKEN
 
-load_dotenv()
 
 con = Connector()
 
@@ -244,7 +243,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    app = Application.builder().token(os.getenv("TOKEN")).concurrent_updates(True).build()
+    app = Application.builder().token(TOKEN).concurrent_updates(True).build()
     conv_handler = ConversationHandler(entry_points=[CommandHandler("start", start_command)],
                                        states={
                                            State.ANY: [MessageHandler(filters.TEXT & (~ filters.COMMAND) & (

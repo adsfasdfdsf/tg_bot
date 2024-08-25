@@ -1,20 +1,16 @@
-import os
 import time
-
-from dotenv import load_dotenv
 
 from database import DataBase
 from graphics import draw_payment_graph, draw_price_graph
 from stockAPI import API
-
-load_dotenv()
+from passwords import DBNAME, USER, HOST, PASSWORD, PORT
 
 
 class Connector:
 
     def __init__(self):
-        self.database = DataBase(dbname=os.getenv("DBNAME"), user=os.getenv("DBUSER"),
-                                 host=os.getenv("HOST"), password=os.getenv("PASSWORD"), port=os.getenv("PORT"))
+        self.database = DataBase(dbname=DBNAME, user=USER,
+                                 host=HOST, password=PASSWORD, port=PORT)
         self.api = API()
 
     async def get_user_securities(self, user_id):
