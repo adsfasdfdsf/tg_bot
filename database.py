@@ -30,19 +30,31 @@ class DataBase:
                             name TEXT,
                             type TEXT
                          )''')
+        await self.con.close()
 
     async def get_user_securities(self, user_id):
+        self.con = await asyncpg.connect(host=self.host,
+                                         port=self.port,
+                                         database=self.dbname,
+                                         password=self.password,
+                                         user=self.user)
         res = await self.con.fetch('''
             SELECT *
             FROM users
             WHERE $1 = user_id
             ''', int(user_id))
+        await self.con.close()
         if not res:
             return []
         r = res[0]["securities"]
         return r
 
     async def add_security_to_user(self, user_id, ticker):
+        self.con = await asyncpg.connect(host=self.host,
+                                         port=self.port,
+                                         database=self.dbname,
+                                         password=self.password,
+                                         user=self.user)
         res = await self.con.fetch('''
         SELECT *
         FROM users
@@ -61,8 +73,14 @@ class DataBase:
                 SET securities = array_append(securities, $1)
                 WHERE user_id = $2
                 ''', ticker.upper(), user_id)
+        await self.con.close()
 
     async def remove_security_from_user(self, user_id, ticker):
+        self.con = await asyncpg.connect(host=self.host,
+                                         port=self.port,
+                                         database=self.dbname,
+                                         password=self.password,
+                                         user=self.user)
         securities = await self.get_user_securities(user_id)
         if ticker.upper() in securities:
             await self.con.execute(f'''
@@ -70,19 +88,31 @@ class DataBase:
             SET securities = array_remove(securities, '{ticker.upper()}')
             WHERE user_id = {int(user_id)}
             ''')
+        await self.con.close()
 
     async def find_security(self, ticker):
+        self.con = await asyncpg.connect(host=self.host,
+                                         port=self.port,
+                                         database=self.dbname,
+                                         password=self.password,
+                                         user=self.user)
         res = await self.con.fetch(f'''
         SELECT * 
         FROM securities
         WHERE secid = '{ticker.upper()}'
         ''')
+        await self.con.close()
         return res[:]
 
     async def add_security(self, secid, isin, shortname, name, type):
+        self.con = await asyncpg.connect(host=self.host,
+                                         port=self.port,
+                                         database=self.dbname,
+                                         password=self.password,
+                                         user=self.user)
         await self.con.execute(f'''
         INSERT INTO securities
         VALUES
         ('{secid.upper()}', '{isin.upper()}', '{shortname}', '{name}', '{type}')
         ''')
-
+        await self.con.close()

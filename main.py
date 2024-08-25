@@ -14,16 +14,12 @@ load_dotenv()
 
 con = Connector()
 
-con_established = False
-
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     markup_key = ReplyKeyboardMarkup(MENU_KEYBOARD, one_time_keyboard=False)
     await context.bot.send_message(chat_id=update.effective_chat.id,
                                    text=texts["greeting"],
                                    reply_markup=markup_key)
-    if not con_established:
-        await con.Init()
     return State.ANY
 
 
@@ -51,7 +47,8 @@ async def any_state(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def add_bond(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = await con.find_bond(update.message.text.strip())
     if len(data) == 0:
-        await update.effective_user.send_message(texts["add_method_not_found"],reply_markup=ReplyKeyboardMarkup(CHOICE_KEYBOARD))
+        await update.effective_user.send_message(texts["add_method_not_found"],
+                                                 reply_markup=ReplyKeyboardMarkup(CHOICE_KEYBOARD))
         return State.SECRITY_CHOICE
     elif len(data) == 1:
         await update.effective_user.send_message("We've found security. \n" +
@@ -161,10 +158,10 @@ async def choose_paper(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await con.add_security_to_db(*data)
                 await con.add_security(update.effective_user.id, data[0])
                 msg = texts["security_description"].format(data[0],
-                                                       data[1],
-                                                       data[2],
-                                                       data[3],
-                                                       data[4]) + "was chosen ✅"
+                                                           data[1],
+                                                           data[2],
+                                                           data[3],
+                                                           data[4]) + "was chosen ✅"
                 await context.bot.editMessageText(chat_id=update.message.chat_id, message_id=choice[0] - 1,
                                                   text=msg)
                 for i in context.chat_data['choice_message_ids']:
@@ -252,14 +249,18 @@ def main():
                                        states={
                                            State.ANY: [MessageHandler(filters.TEXT & (~ filters.COMMAND) & (
                                                ~ filters.Regex('Stop conversation')), any_state)],
-                                           State.ADD_SHARE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), add_share),
-                                                       CommandHandler("end", end_process)],
-                                           State.ADD_BOND: [MessageHandler(filters.TEXT & (~ filters.COMMAND), add_bond),
-                                                      CommandHandler("end", end_process)],
-                                           State.CHOICE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), choose_paper),
-                                                    CommandHandler("end", end_choosing)],
-                                           State.DELETE: [MessageHandler(filters.TEXT & (~ filters.COMMAND), remove_paper),
-                                                    CommandHandler("end", end_process)],
+                                           State.ADD_SHARE: [
+                                               MessageHandler(filters.TEXT & (~ filters.COMMAND), add_share),
+                                               CommandHandler("end", end_process)],
+                                           State.ADD_BOND: [
+                                               MessageHandler(filters.TEXT & (~ filters.COMMAND), add_bond),
+                                               CommandHandler("end", end_process)],
+                                           State.CHOICE: [
+                                               MessageHandler(filters.TEXT & (~ filters.COMMAND), choose_paper),
+                                               CommandHandler("end", end_choosing)],
+                                           State.DELETE: [
+                                               MessageHandler(filters.TEXT & (~ filters.COMMAND), remove_paper),
+                                               CommandHandler("end", end_process)],
                                            State.SECRITY_CHOICE: [
                                                MessageHandler(filters.TEXT & (~ filters.COMMAND), security_choice),
                                                CommandHandler("end", end_process)]

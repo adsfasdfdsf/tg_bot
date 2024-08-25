@@ -9,15 +9,13 @@ from stockAPI import API
 
 load_dotenv()
 
+
 class Connector:
+
     def __init__(self):
         self.database = DataBase(dbname=os.getenv("DBNAME"), user=os.getenv("DBUSER"),
                                  host=os.getenv("HOST"), password=os.getenv("PASSWORD"), port=os.getenv("PORT"))
         self.api = API()
-
-    async def Init(self):
-        await self.database.async_connect()
-        await self.api.Init()
 
     async def get_user_securities(self, user_id):
         return await self.database.get_user_securities(user_id)

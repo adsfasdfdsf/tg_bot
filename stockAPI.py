@@ -5,9 +5,6 @@ import httpx
 
 class API:
     def __init__(self):
-        self._client = None
-
-    async def Init(self):
         self._client = httpx.AsyncClient()
 
     async def get_share_by_name(self, security_name: str) -> list:
