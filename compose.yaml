@@ -1,8 +1,8 @@
 services:
   web:
-    image: tg_bot
+    build: .
     ports: 
-      - "8000:5000"
+      - "80:5000"
   postgres:
     image: postgres:latest
     container_name: postgres_container

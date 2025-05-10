@@ -10,7 +10,6 @@ from states import State
 from texts import texts
 from passwords import TOKEN
 
-
 con = Connector()
 
 
@@ -55,8 +54,8 @@ async def add_bond(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                                                                       data[0]['isin'],
                                                                                       data[0]['shortname'],
                                                                                       data[0]['name'],
-                                                                                      data[0]['type'],
-                                                                                      parse_mode="HTML"))
+                                                                                      data[0]['type']),
+                                                 parse_mode="HTML")
         await con.add_security(update.effective_user.id, data[0]["secid"])
         await con.add_security_to_db(data[0]['secid'], data[0]['isin'], data[0]['shortname'], data[0]['name'],
                                      data[0]['type'])
@@ -96,8 +95,8 @@ async def add_share(update: Update, context: ContextTypes.DEFAULT_TYPE):
                                                                                       data[0]['isin'],
                                                                                       data[0]['shortname'],
                                                                                       data[0]['name'],
-                                                                                      data[0]['type'],
-                                                                                      parse_mode="HTML"))
+                                                                                      data[0]['type']),
+                                                 parse_mode="HTML")
         await con.add_security(update.effective_user.id, data[0]["secid"])
         await con.add_security_to_db(data[0]['secid'], data[0]['isin'], data[0]['shortname'], data[0]['name'],
                                      data[0]['type'])

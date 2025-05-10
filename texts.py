@@ -22,15 +22,15 @@ texts = {
                                 "Please specify which one: by typing the number. Example: 1"
                                 " or by typing ticker or by typing secid,"
                                 " you can stop choosing by typing /end",
-    "security_option": "{}) Ticker: <b>{}</b> " 
-                       "\nISIN: <b>{}</b>" 
-                       "\nShortname: <b>{}</b>" 
-                       "\nName: <b>{}</b>" 
+    "security_option": "{}) Ticker: <b>{}</b> "
+                       "\nISIN: <b>{}</b>"
+                       "\nShortname: <b>{}</b>"
+                       "\nName: <b>{}</b>"
                        "\nType: <b>{}</b>",
     "didnt_fit_option": "Choice doesn't fit any option. Try again or /end",
     "add_share_description": "Write a tiсker (or a name, but ticker is better) of a share you want to add.",
     "add_bond_description": "Write a tiсker (or a name, but ticker is better) of a bond you want to add.",
     "add_multiple": "If you want to add more than one, type the names in different "
-            "messages or in one separated with ' '. To end adding type /end",
+                    "messages or in one separated with ' '. To end adding type /end",
     "bye": "Bye, if you want to restart conversation write /start",
 }

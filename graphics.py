@@ -23,7 +23,8 @@ async def draw_price_graph(name: str, data: list, secid: str) -> None:
     a["High"] = high
     a["Low"] = low
     df = pd.DataFrame(a, index=dates)
-    fig, axlist = mpf.plot(df, type="line", style="binance", figratio=[17, 8], figscale=1.2, fontscale=0.7, tight_layout=True,
+    fig, axlist = mpf.plot(df, type="line", style="binance", figratio=[17, 8], figscale=1.2, fontscale=0.7,
+                           tight_layout=True,
                            returnfig=True, xrotation=90, title=f"{name} • {secid} • price in Rub")
     ticklocations = [df.index.get_loc(tick) for tick in df.index][::2]
     axlist[-2].xaxis.set_ticks(ticklocations)
@@ -43,4 +44,3 @@ async def draw_payment_graph(ticker: str, data: list, name: str) -> None:
     mpl.xticks(rotation=45)
     mpl.yticks(series.values)
     mpl.savefig(f"{ticker}payment.png")
-

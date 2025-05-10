@@ -61,5 +61,3 @@ class API:
                                           params=params)
         r = json.loads(await response.aread())
         return r
-
-

@@ -44,6 +44,8 @@ class Connector:
             a["type"] = i[4]
             result.append(a)
 
+        if len(result) > 30:
+            return result[:30]
         return result
 
     async def draw_payment_graph(self, ticker):
@@ -97,6 +99,8 @@ class Connector:
             a["type"] = i[4]
             result.append(a)
 
+        if len(result) > 30:
+            return result[:30]
         return result
 
     async def add_security_to_db(self, secid, isin, shortname, name, type):
@@ -123,4 +127,3 @@ class Connector:
         if len(data["history"]["data"]) == 0:
             return "api error, no history found"
         await draw_price_graph(sec[0]["shortname"], data["history"]["data"], sec[0]["secid"])
-
