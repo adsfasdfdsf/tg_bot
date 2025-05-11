@@ -5,5 +5,5 @@
 *.pyc
 .env
 .idea
-passwords.py
 .dockerignore
+passwords.py
