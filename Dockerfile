@@ -3,5 +3,5 @@ WORKDIR /app
 COPY . ./
 ENV PYTHONPATH=./python
 EXPOSE 5000
-RUN pip install requirements.txt
+RUN pip install -r requirements.txt
 CMD ["python", "main.py"]
